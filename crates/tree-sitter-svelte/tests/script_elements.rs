@@ -106,3 +106,13 @@ fn test_script_with_markup() {
         "(document (element (start_tag name: (tag_name)) (raw_text) (end_tag name: (tag_name))) (text) (element (start_tag name: (tag_name)) (text) (expression content: (js)) (text) (end_tag name: (tag_name))))"
     );
 }
+
+#[test]
+fn test_script_end_tag_name_needs_delimiter() {
+    // `</script\>` is not an end tag (the name must be followed by
+    // whitespace, `/` or `>`), so it stays inside the raw text.
+    assert_eq!(
+        parse("<script>// </script\\>\nlet a = 1;</script>"),
+        "(document (element (start_tag name: (tag_name)) (raw_text) (end_tag name: (tag_name))))"
+    );
+}

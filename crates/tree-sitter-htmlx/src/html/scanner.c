@@ -367,11 +367,18 @@ static bool scan_raw_text(Scanner *scanner, TSLexer *lexer) {
 
     if (upper == delimiter[match_index]) {
       match_index++;
-      if (match_index == delimiter_len) {
-        // Found end delimiter - don't consume it
-        break;
-      }
       advance(lexer);
+      if (match_index == delimiter_len) {
+        // The tag name must be followed by whitespace, '/' or '>' to end
+        // the element (§13.2.5.4); `</script\>` in a comment is still text.
+        // The end delimiter itself stays outside the token (mark_end).
+        int32_t next = lexer->lookahead;
+        if (next == '>' || next == '/' || next == 0 || is_html_space(next)) {
+          break;
+        }
+        match_index = 0;
+        lexer->mark_end(lexer);
+      }
     } else {
       // Reset matching, mark position as content end
       match_index = 0;
