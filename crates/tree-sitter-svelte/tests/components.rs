@@ -255,3 +255,12 @@ fn test_component_bind_this() {
         "(document (element (self_closing_tag name: (tag_name) (attribute name: (attribute_name (attribute_directive) (attribute_identifier)) value: (expression content: (js))))))"
     );
 }
+
+#[test]
+fn test_self_closing_member_component_keeps_parent_open() {
+    // `/>` of a member tag must not pop the enclosing element off the tag stack.
+    assert_eq!(
+        parse("<Chart.Container><PieChart><Chart.Tooltip /></PieChart></Chart.Container>"),
+        "(document (element (start_tag name: (tag_name object: (tag_member) property: (tag_member))) (element (start_tag name: (tag_name)) (element (self_closing_tag name: (tag_name object: (tag_member) property: (tag_member)))) (end_tag name: (tag_name))) (end_tag name: (tag_name object: (tag_member) property: (tag_member)))))"
+    );
+}

@@ -334,6 +334,9 @@ static bool scan_start_tag(State *state, TSLexer *lexer, const bool *valid) {
         advance(lexer);
         if (is_ident_start(lexer->lookahead) && valid[MEMBER_TAG_OBJECT]) {
             lexer->result_symbol = MEMBER_TAG_OBJECT;
+            // Like namespaced tags, member tags are never pushed onto the
+            // tag stack, so a following `/>` must not pop the parent.
+            state->open_tag_is_namespaced = true;
             array_delete(&name);
             return true;
         }
@@ -454,8 +457,9 @@ static bool scan_slash_prefixed(State *state, TSLexer *lexer, const bool *valid)
         lexer->mark_end(lexer);
 
         if (state->open_tag_is_namespaced) {
-            // Namespaced tags (e.g. <svelte:window/>) were never pushed
-            // onto the tag stack, so don't pop.
+            // Namespaced tags (e.g. <svelte:window/>) and member tags
+            // (e.g. <UI.Button/>) were never pushed onto the tag stack,
+            // so don't pop.
             state->open_tag_is_namespaced = false;
         } else if (htmlx_has_open_tag(state)) {
             htmlx_pop_open_tag(state);
