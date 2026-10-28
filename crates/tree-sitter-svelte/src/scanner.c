@@ -172,6 +172,7 @@ static bool scan_balanced(TSLexer *lexer, int32_t stop_char, bool stop_comma, bo
     bool has_content = false;
     bool needs_mark = false;
     bool found_terminator = false;
+    bool after_ident = false;
 
     while (lexer->lookahead) {
         int32_t c = lexer->lookahead;
@@ -189,10 +190,20 @@ static bool scan_balanced(TSLexer *lexer, int32_t stop_char, bool stop_comma, bo
             break;
         }
         // At depth 0, classify '<' as either tag boundary or expression operator.
+        // Directly after an identifier it is a type argument list or a
+        // comparison (`x: Array<T>`, `a<b`), never the start of a tag.
         if (depth == 0 && c == '<') {
             if (needs_mark) {
                 lexer->mark_end(lexer);
                 needs_mark = false;
+            }
+
+            if (after_ident) {
+                PROFILE_ADVANCE(scan_balanced_bytes, lexer);
+                after_ident = false;
+                has_content = true;
+                needs_mark = true;
+                continue;
             }
 
             if (scan_lt_as_tag_boundary(lexer)) {
@@ -206,6 +217,7 @@ static bool scan_balanced(TSLexer *lexer, int32_t stop_char, bool stop_comma, bo
         }
 
         if (skip_string(lexer)) {
+            after_ident = false;
             has_content = true;
             needs_mark = true;
             continue;
@@ -213,6 +225,7 @@ static bool scan_balanced(TSLexer *lexer, int32_t stop_char, bool stop_comma, bo
 
         // JS comments: // line and /* block */
         if (c == '/') {
+            after_ident = false;
             advance(lexer);
 
             if (lexer->lookahead == '/') {
@@ -251,6 +264,7 @@ static bool scan_balanced(TSLexer *lexer, int32_t stop_char, bool stop_comma, bo
 
         // At depth 0, mark before whitespace (handles trailing ws)
         if (depth == 0 && is_space(c)) {
+            after_ident = false;
             if (needs_mark) {
                 lexer->mark_end(lexer);
                 needs_mark = false;
@@ -284,6 +298,7 @@ static bool scan_balanced(TSLexer *lexer, int32_t stop_char, bool stop_comma, bo
             case ')': case ']': case '}': if (--depth < 0) goto done; break;
         }
 
+        after_ident = is_ident_char(c);
         PROFILE_ADVANCE(scan_balanced_bytes, lexer);
         has_content = true;
         needs_mark = true;
@@ -321,11 +336,25 @@ static inline bool finish_iterator_expression(State *state, TSLexer *lexer, bool
     return result;
 }
 
+static bool is_operator_char(int32_t c) {
+    switch (c) {
+        case '!': case '%': case '&': case '*': case '+': case ',': case '-':
+        case '/': case ':': case '<': case '=': case '>': case '?': case '^':
+        case '|': case '~': case '(': case '[': case '{':
+            return true;
+        default:
+            return false;
+    }
+}
+
 static bool scan_iterator(State *state, TSLexer *lexer) {
     PROFILE_COUNT(scan_iterator_calls);
     int depth = 0;
     bool has_content = false;
     bool found_terminator = false;
+    // Last character consumed outside whitespace, to tell `items (key)`
+    // from `a && (b || c)`.
+    int32_t last = 0;
 
     while (is_space(lexer->lookahead)) PROFILE_SKIP(scan_iterator_bytes, lexer);
 
@@ -357,6 +386,7 @@ static bool scan_iterator(State *state, TSLexer *lexer) {
                 break;
             }
 
+            last = '<';
             has_content = true;
             continue;
         }
@@ -378,7 +408,7 @@ static bool scan_iterator(State *state, TSLexer *lexer) {
                 return finish_iterator_expression(state, lexer, has_content);
             } else if (c == 'c' && match_keyword(lexer, "catch", 5)) {
                 return finish_iterator_expression(state, lexer, has_content);
-            } else if (c == '(') {
+            } else if (c == '(' && !is_operator_char(last)) {
                 return finish_iterator_expression(state, lexer, has_content);
             } else if (c == 0) {
                 return finish_iterator_expression(state, lexer, has_content);
@@ -388,6 +418,7 @@ static bool scan_iterator(State *state, TSLexer *lexer) {
         }
 
         if (skip_string(lexer)) {
+            last = '"';
             has_content = true;
             continue;
         }
@@ -397,6 +428,7 @@ static bool scan_iterator(State *state, TSLexer *lexer) {
             case ')': case ']': case '}': depth--; break;
         }
 
+        last = c;
         PROFILE_ADVANCE(scan_iterator_bytes, lexer);
         has_content = true;
     }

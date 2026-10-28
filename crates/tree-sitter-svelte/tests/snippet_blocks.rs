@@ -82,3 +82,20 @@ fn test_snippet_default_value_with_parens() {
         "(document (snippet_block (block_open) name: (snippet_name) parameters: (snippet_parameters parameter: (pattern content: (js))) (block_close) (element (start_tag name: (tag_name)) (text) (end_tag name: (tag_name))) (block_end (block_open) (block_keyword) (block_close))))"
     );
 }
+
+#[test]
+fn test_snippet_parameter_with_generic_type() {
+    // `<T>` directly after an identifier is a type argument list, not a tag.
+    assert_eq!(
+        parse("<script lang=\"ts\"></script>{#snippet row(items: Array<Item>)}<p>x</p>{/snippet}"),
+        "(document (element (start_tag name: (tag_name) (attribute name: (attribute_name) value: (quoted_attribute_value (attribute_value)))) (raw_text) (end_tag name: (tag_name))) (snippet_block (block_open) name: (snippet_name) parameters: (snippet_parameters parameter: (pattern content: (ts))) (block_close) (element (start_tag name: (tag_name)) (text) (end_tag name: (tag_name))) (block_end (block_open) (block_keyword) (block_close))))"
+    );
+}
+
+#[test]
+fn test_snippet_parameter_with_generic_intersection_type() {
+    assert_eq!(
+        parse("<script lang=\"ts\"></script>{#snippet h({ title }: { title: string } & HTMLAttributes<HTMLDivElement>)}<p>x</p>{/snippet}"),
+        "(document (element (start_tag name: (tag_name) (attribute name: (attribute_name) value: (quoted_attribute_value (attribute_value)))) (raw_text) (end_tag name: (tag_name))) (snippet_block (block_open) name: (snippet_name) parameters: (snippet_parameters parameter: (pattern content: (ts))) (block_close) (element (start_tag name: (tag_name)) (text) (end_tag name: (tag_name))) (block_end (block_open) (block_keyword) (block_close))))"
+    );
+}

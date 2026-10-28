@@ -138,3 +138,13 @@ fn test_else_if_block_kind_text() {
     }
     assert!(found_else_if, "Should find an else_if_clause node");
 }
+
+#[test]
+fn test_if_with_parenthesized_operand() {
+    // ` (` after an operator continues the expression; only `items (key)`
+    // in an each block starts a key.
+    assert_eq!(
+        parse("{#if !compact && (a || b)}x{/if}"),
+        "(document (if_block (block_open) expression: (expression content: (js)) (block_close) (text) (block_end (block_open) (block_keyword) (block_close))))"
+    );
+}
