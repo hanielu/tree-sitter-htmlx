@@ -473,6 +473,11 @@
     }
   },
   {
+    "type": "block_open",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "const_tag",
     "named": true,
     "fields": {
@@ -2008,6 +2013,10 @@
     "named": false
   },
   {
+    "type": "#",
+    "named": false
+  },
+  {
     "type": "'",
     "named": false
   },
@@ -2025,6 +2034,10 @@
   },
   {
     "type": ".",
+    "named": false
+  },
+  {
+    "type": "/",
     "named": false
   },
   {
@@ -2053,6 +2066,10 @@
   },
   {
     "type": ">",
+    "named": false
+  },
+  {
+    "type": "@",
     "named": false
   },
   {
@@ -2101,10 +2118,6 @@
   },
   {
     "type": "block_keyword",
-    "named": true
-  },
-  {
-    "type": "block_open",
     "named": true
   },
   {

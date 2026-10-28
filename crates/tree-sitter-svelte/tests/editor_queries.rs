@@ -413,3 +413,24 @@ fn locals_cover_recovery_branch_bindings_and_references() {
         &["orphaned"],
     );
 }
+
+#[test]
+fn block_open_keeps_the_brace_apart_from_the_sigil() {
+    // Editors match the brace as a bracket and color the sigil with the keyword.
+    let source =
+        "{#if a}\n\t{@render b()}\n{:else}\n\t<div {@attach c}\n\t\t{@attach d}></div>\n{/if}";
+    let tree = parse(source);
+    let mut sigils = Vec::new();
+    let mut stack = vec![tree.root_node()];
+    while let Some(node) = stack.pop() {
+        if node.kind() == "block_open" {
+            assert_eq!(node.child_count(), 2, "{node:?}");
+            assert_eq!(node.child(0).unwrap().kind(), "{", "{node:?}");
+            sigils.push(node.child(1).unwrap().kind());
+        }
+        let mut cursor = node.walk();
+        stack.extend(node.children(&mut cursor));
+    }
+    sigils.sort_unstable();
+    assert_eq!(sigils, ["#", "/", ":", "@", "@", "@"]);
+}

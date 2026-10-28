@@ -32,6 +32,9 @@ enum {
     BLOCK_EOF,
     SNIPPET_HEADER_TRAILING,
     INCOMPLETE_ATTRIBUTE_EXPRESSION,
+    HASH_BLOCK_BRACE,
+    COLON_BLOCK_BRACE,
+    AT_BLOCK_BRACE,
 };
 
 typedef struct {
@@ -758,34 +761,48 @@ static bool scan_declaration_keyword(TSLexer *lexer, const char *keyword, unsign
     return !is_ident_char(lexer->lookahead);
 }
 
-// Match declaration-tag `{` and block-end `{/` openings from one lookahead path.
-// The declaration token ends at `{`; its keyword is consumed later by the grammar.
-static bool scan_svelte_brace_open(
-    State *state,
-    TSLexer *lexer,
-    bool declaration_valid,
-    bool block_end_valid,
-    bool unterminated_tag_end_valid
-) {
+// Match the `{` that opens a block, branch, tag or declaration from one lookahead path.
+// Every token ends at `{`: the sigil after it (`#`, `:`, `@`, `/`) and the declaration
+// keyword are consumed later by the grammar.
+static bool scan_svelte_brace_open(State *state, TSLexer *lexer, const bool *valid) {
     PROFILE_COUNT(scan_block_end_open_calls);
     if (lexer->lookahead != '{') return false;
     lexer->mark_end(lexer);
     PROFILE_ADVANCE(scan_block_end_open_bytes, lexer);
 
-    if (block_end_valid && lexer->lookahead == '/') {
+    int32_t sigil = lexer->lookahead;
+    if (sigil == '#' || sigil == '@') {
+        int symbol = sigil == '#' ? HASH_BLOCK_BRACE : AT_BLOCK_BRACE;
+        if (!valid[symbol]) return false;
+        lexer->mark_end(lexer);
+        lexer->result_symbol = symbol;
+        return true;
+    }
+
+    if (valid[BLOCK_END_OPEN] && sigil == '/') {
+        lexer->mark_end(lexer);
         PROFILE_ADVANCE(scan_block_end_open_bytes, lexer);
         if (!is_ident_start(lexer->lookahead)) return false;
-        lexer->mark_end(lexer);
         lexer->result_symbol = BLOCK_END_OPEN;
         PROFILE_COUNT(scan_block_end_open_successes);
         return true;
     }
 
-    if (unterminated_tag_end_valid && htmlx_has_open_tag(state) && scan_block_boundary_after_open(state, lexer)) {
+    // The boundary check consumes the branch, so a `{:` it rejects is not a block
+    // brace either.
+    if (valid[UNTERMINATED_TAG_END] && htmlx_has_open_tag(state)) {
+        if (scan_block_boundary_after_open(state, lexer)) return true;
+        if (sigil == '/' || sigil == ':') return false;
+    }
+
+    if (sigil == ':') {
+        if (!valid[COLON_BLOCK_BRACE]) return false;
+        lexer->mark_end(lexer);
+        lexer->result_symbol = COLON_BLOCK_BRACE;
         return true;
     }
 
-    if (!declaration_valid) return false;
+    if (!valid[DECLARATION_BLOCK_OPEN]) return false;
 
     lexer->mark_end(lexer);
     while (is_space(lexer->lookahead)) advance(lexer);
@@ -804,7 +821,7 @@ static bool scan_svelte_brace_open(
 // BLOCK_END_OPEN uses early-return (return result regardless of success/failure)
 // because it advances the lexer on failure. When it returns false, tree-sitter
 // falls back to its internal lexer at the original position, matching literal
-// tokens like { and {:
+// tokens like {
 //
 // Other svelte tokens use the same early-return pattern because they're
 // expected in exclusive grammar contexts where no other token competes.
@@ -817,14 +834,10 @@ static bool svelte_scan(State *state, TSLexer *lexer, const bool *valid) {
         return true;
     }
 
-    if ((valid[DECLARATION_BLOCK_OPEN] || valid[BLOCK_END_OPEN]) && lexer->lookahead == '{') {
-        return scan_svelte_brace_open(
-            state,
-            lexer,
-            valid[DECLARATION_BLOCK_OPEN],
-            valid[BLOCK_END_OPEN],
-            valid[UNTERMINATED_TAG_END]
-        );
+    if ((valid[DECLARATION_BLOCK_OPEN] || valid[BLOCK_END_OPEN] || valid[HASH_BLOCK_BRACE] ||
+         valid[COLON_BLOCK_BRACE] || valid[AT_BLOCK_BRACE]) &&
+        lexer->lookahead == '{') {
+        return scan_svelte_brace_open(state, lexer, valid);
     }
     if (valid[BLOCK_START_EOF] && lexer->lookahead == 0) return scan_block_start_eof(lexer);
     if (valid[BLOCK_EOF] && lexer->lookahead == 0) return scan_block_eof(lexer);
@@ -848,6 +861,12 @@ static bool svelte_scan(State *state, TSLexer *lexer, const bool *valid) {
     if (valid[DECLARATION_EXPRESSION_JS] || valid[DECLARATION_EXPRESSION_TS]) return scan_declaration_expression(state, lexer);
     if (valid[INCOMPLETE_ATTRIBUTE_EXPRESSION] && lexer->lookahead == '{') {
         return scan_incomplete_attribute_expression(lexer);
+    }
+
+    // Among attributes, `{@attach ...}` follows whitespace that is not text, so it
+    // starts with a plain `{`; the `@` after it belongs to the tag, not to an expression.
+    if (lexer->lookahead == '@' && (valid[EXPRESSION_JS] || valid[EXPRESSION_TS])) {
+        return false;
     }
 
     // Fall through to HTMLX scanner for all other tokens.

@@ -1700,6 +1700,96 @@
       "named": true,
       "value": "block_close"
     },
+    "_hash_block_open": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_hash_block_brace"
+          },
+          "named": false,
+          "value": "{"
+        },
+        {
+          "type": "STRING",
+          "value": "#"
+        }
+      ]
+    },
+    "_colon_block_open": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_colon_block_brace"
+          },
+          "named": false,
+          "value": "{"
+        },
+        {
+          "type": "STRING",
+          "value": ":"
+        }
+      ]
+    },
+    "_at_block_open": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_at_block_brace"
+              },
+              "named": false,
+              "value": "{"
+            },
+            {
+              "type": "STRING",
+              "value": "@"
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "{"
+            },
+            {
+              "type": "STRING",
+              "value": "@"
+            }
+          ]
+        }
+      ]
+    },
+    "_end_block_open": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_block_end_open"
+          },
+          "named": false,
+          "value": "{"
+        },
+        {
+          "type": "STRING",
+          "value": "/"
+        }
+      ]
+    },
     "_iterator_expression": {
       "type": "FIELD",
       "name": "content",
@@ -2058,11 +2148,8 @@
               {
                 "type": "ALIAS",
                 "content": {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "STRING",
-                    "value": "{:"
-                  }
+                  "type": "SYMBOL",
+                  "name": "_colon_block_open"
                 },
                 "named": true,
                 "value": "block_open"
@@ -2129,11 +2216,8 @@
               {
                 "type": "ALIAS",
                 "content": {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "STRING",
-                    "value": "{:"
-                  }
+                  "type": "SYMBOL",
+                  "name": "_colon_block_open"
                 },
                 "named": true,
                 "value": "block_open"
@@ -2163,11 +2247,8 @@
               {
                 "type": "ALIAS",
                 "content": {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "STRING",
-                    "value": "{:"
-                  }
+                  "type": "SYMBOL",
+                  "name": "_colon_block_open"
                 },
                 "named": true,
                 "value": "block_open"
@@ -2348,7 +2429,7 @@
           "type": "ALIAS",
           "content": {
             "type": "SYMBOL",
-            "name": "_block_end_open"
+            "name": "_end_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -2374,7 +2455,7 @@
           "type": "ALIAS",
           "content": {
             "type": "SYMBOL",
-            "name": "_block_end_open"
+            "name": "_end_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -2401,7 +2482,7 @@
           "type": "ALIAS",
           "content": {
             "type": "SYMBOL",
-            "name": "_block_end_open"
+            "name": "_end_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -2428,7 +2509,7 @@
           "type": "ALIAS",
           "content": {
             "type": "SYMBOL",
-            "name": "_block_end_open"
+            "name": "_end_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -2455,7 +2536,7 @@
           "type": "ALIAS",
           "content": {
             "type": "SYMBOL",
-            "name": "_block_end_open"
+            "name": "_end_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -2482,7 +2563,7 @@
           "type": "ALIAS",
           "content": {
             "type": "SYMBOL",
-            "name": "_block_end_open"
+            "name": "_end_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -2650,11 +2731,8 @@
         {
           "type": "ALIAS",
           "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "{#"
-            }
+            "type": "SYMBOL",
+            "name": "_hash_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -2696,11 +2774,8 @@
         {
           "type": "ALIAS",
           "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "{#"
-            }
+            "type": "SYMBOL",
+            "name": "_hash_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -2737,11 +2812,8 @@
           {
             "type": "ALIAS",
             "content": {
-              "type": "TOKEN",
-              "content": {
-                "type": "STRING",
-                "value": "{:"
-              }
+              "type": "SYMBOL",
+              "name": "_colon_block_open"
             },
             "named": true,
             "value": "block_open"
@@ -2815,11 +2887,8 @@
           {
             "type": "ALIAS",
             "content": {
-              "type": "TOKEN",
-              "content": {
-                "type": "STRING",
-                "value": "{:"
-              }
+              "type": "SYMBOL",
+              "name": "_colon_block_open"
             },
             "named": true,
             "value": "block_open"
@@ -2975,11 +3044,8 @@
         {
           "type": "ALIAS",
           "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "{#"
-            }
+            "type": "SYMBOL",
+            "name": "_hash_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -3038,11 +3104,8 @@
         {
           "type": "ALIAS",
           "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "{#"
-            }
+            "type": "SYMBOL",
+            "name": "_hash_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -3399,11 +3462,8 @@
         {
           "type": "ALIAS",
           "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "{#"
-            }
+            "type": "SYMBOL",
+            "name": "_hash_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -3445,11 +3505,8 @@
         {
           "type": "ALIAS",
           "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "{#"
-            }
+            "type": "SYMBOL",
+            "name": "_hash_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -3483,11 +3540,8 @@
         {
           "type": "ALIAS",
           "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "{#"
-            }
+            "type": "SYMBOL",
+            "name": "_hash_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -3611,11 +3665,8 @@
         {
           "type": "ALIAS",
           "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "{:"
-            }
+            "type": "SYMBOL",
+            "name": "_colon_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -3790,11 +3841,8 @@
         {
           "type": "ALIAS",
           "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "{#"
-            }
+            "type": "SYMBOL",
+            "name": "_hash_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -3836,11 +3884,8 @@
         {
           "type": "ALIAS",
           "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "{#"
-            }
+            "type": "SYMBOL",
+            "name": "_hash_block_open"
           },
           "named": true,
           "value": "block_open"
@@ -3905,11 +3950,8 @@
               {
                 "type": "ALIAS",
                 "content": {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "STRING",
-                    "value": "{#"
-                  }
+                  "type": "SYMBOL",
+                  "name": "_hash_block_open"
                 },
                 "named": true,
                 "value": "block_open"
@@ -4042,11 +4084,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{#"
-                }
+                "type": "SYMBOL",
+                "name": "_hash_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -4080,11 +4119,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{#"
-                }
+                "type": "SYMBOL",
+                "name": "_hash_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -4118,11 +4154,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{#"
-                }
+                "type": "SYMBOL",
+                "name": "_hash_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -4242,11 +4275,8 @@
               {
                 "type": "ALIAS",
                 "content": {
-                  "type": "TOKEN",
-                  "content": {
-                    "type": "STRING",
-                    "value": "{#"
-                  }
+                  "type": "SYMBOL",
+                  "name": "_hash_block_open"
                 },
                 "named": true,
                 "value": "block_open"
@@ -4322,11 +4352,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{#"
-                }
+                "type": "SYMBOL",
+                "name": "_hash_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -4360,11 +4387,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{#"
-                }
+                "type": "SYMBOL",
+                "name": "_hash_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -4398,11 +4422,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{#"
-                }
+                "type": "SYMBOL",
+                "name": "_hash_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -4587,11 +4608,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{@"
-                }
+                "type": "SYMBOL",
+                "name": "_at_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -4633,11 +4651,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{@"
-                }
+                "type": "SYMBOL",
+                "name": "_at_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -4671,11 +4686,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{@"
-                }
+                "type": "SYMBOL",
+                "name": "_at_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -4717,11 +4729,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{@"
-                }
+                "type": "SYMBOL",
+                "name": "_at_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -4755,11 +4764,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{@"
-                }
+                "type": "SYMBOL",
+                "name": "_at_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -4801,11 +4807,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{@"
-                }
+                "type": "SYMBOL",
+                "name": "_at_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -4907,11 +4910,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{@"
-                }
+                "type": "SYMBOL",
+                "name": "_at_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -4953,11 +4953,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{@"
-                }
+                "type": "SYMBOL",
+                "name": "_at_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -4991,11 +4988,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{@"
-                }
+                "type": "SYMBOL",
+                "name": "_at_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -5037,11 +5031,8 @@
             {
               "type": "ALIAS",
               "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "STRING",
-                  "value": "{@"
-                }
+                "type": "SYMBOL",
+                "name": "_at_block_open"
               },
               "named": true,
               "value": "block_open"
@@ -5310,6 +5301,18 @@
     {
       "type": "SYMBOL",
       "name": "_incomplete_attribute_expression"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_hash_block_brace"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_colon_block_brace"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_at_block_brace"
     }
   ],
   "inline": [],
